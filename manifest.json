@@ -1,0 +1,241 @@
+{
+  "schema": 1,
+  "id": "promboard.partcrafter",
+  "version": "1.0.0",
+  "name": "PartCrafter — 이미지 → 부품별 3D",
+  "description": "PartCrafter(NeurIPS 2025)로 물체 사진 한 장에서 부품이 따로 나뉜 3D 메시를 GLB 로 만든다. 부품 수를 정하면 그만큼 나눠 한 번에 만들며, 부품마다 색 · 이름이 달라 3D 프로그램에서 따로 고칠 수 있다. 배경은 BiRefNet(MIT)으로 지운다. NVIDIA 그래픽카드(CUDA) 전용.",
+  "author": "PromBoard",
+  "license": "MIT AND Apache-2.0",
+  "app": ">=1.0.3",
+  "categories": [
+    "model3d"
+  ],
+  "unverified": true,
+  "repository": "https://github.com/promboard-app/partcrafter",
+  "icon": "icon.png",
+  "contents": [
+    "nodes"
+  ],
+  "nodes": [
+    {
+      "id": "image-to-parts",
+      "label": "PartCrafter 이미지 → 부품별 3D",
+      "description": "물체 사진 한 장으로 부품(다리 · 몸통 · 손잡이 등)이 따로 나뉜 3D 메시를 GLB 하나로 만든다. 부품마다 색이 다르고 이름(part_00 …)이 붙어 3D 프로그램에서 따로 고를 수 있다. 색 · 재질은 입히지 않는다.",
+      "layout": "single",
+      "views": [
+        "orbit3d"
+      ],
+      "inputs": [
+        {
+          "id": "image",
+          "type": "image",
+          "label": "물체 사진",
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "id": "model",
+          "type": "model3d",
+          "label": "부품별 3D (GLB)"
+        }
+      ],
+      "settings": [
+        {
+          "id": "parts",
+          "label": "부품 수",
+          "help": "몇 조각으로 나눌지 정합니다. 물체의 실제 부품 수에 맞추면 잘 나뉩니다. 많을수록 그래픽카드 메모리와 시간이 늘어납니다.",
+          "type": "integer",
+          "default": 4,
+          "min": 1,
+          "max": 16
+        },
+        {
+          "id": "tokens",
+          "label": "부품마다 점 수",
+          "help": "부품 하나를 나타내는 점(토큰) 수. 1024 가 공식 기본입니다. 512 는 가볍고, 2048 은 자세하지만 메모리를 많이 씁니다.",
+          "type": "select",
+          "options": [
+            {
+              "value": "512",
+              "label": "512 (가볍게)"
+            },
+            {
+              "value": "1024",
+              "label": "1024 (기본)"
+            },
+            {
+              "value": "2048",
+              "label": "2048 (자세히)"
+            }
+          ],
+          "default": "1024"
+        },
+        {
+          "id": "background",
+          "label": "배경 지우기",
+          "help": "자동은 투명 PNG 면 그 투명도를 쓰고, 아니면 BiRefNet(약 0.2GB 받음)으로 배경을 지웁니다. 이미 흰 배경에 물체만 있는 그림이면 '안 함'을 고릅니다.",
+          "type": "select",
+          "options": [
+            {
+              "value": "auto",
+              "label": "자동"
+            },
+            {
+              "value": "birefnet",
+              "label": "늘 BiRefNet 으로 지우기"
+            },
+            {
+              "value": "none",
+              "label": "안 함"
+            }
+          ],
+          "default": "auto"
+        },
+        {
+          "id": "faces",
+          "label": "면 수(전체)",
+          "help": "모든 부품을 합친 삼각형 수. 부품 크기에 맞춰 나눠 줄입니다. 원본은 부품마다 수십만 개라 파일이 큽니다.",
+          "type": "select",
+          "options": [
+            {
+              "value": "50000",
+              "label": "5만 (가볍게)"
+            },
+            {
+              "value": "200000",
+              "label": "20만 (보통)"
+            },
+            {
+              "value": "0",
+              "label": "원본 그대로"
+            }
+          ],
+          "default": "200000"
+        },
+        {
+          "id": "steps",
+          "label": "단계 수",
+          "help": "많을수록 모양이 다듬어지지만 오래 걸립니다. 공식 기본은 50.",
+          "type": "integer",
+          "default": 50,
+          "min": 10,
+          "max": 100
+        },
+        {
+          "id": "guidance",
+          "label": "그림 따르기",
+          "help": "클수록 넣은 그림의 모양을 더 따릅니다. 공식 기본은 7.",
+          "type": "number",
+          "default": 7.0,
+          "min": 1.0,
+          "max": 15.0,
+          "step": 0.5
+        },
+        {
+          "id": "seed",
+          "label": "시드",
+          "help": "같은 시드 · 같은 그림 · 같은 부품 수면 같은 결과가 나옵니다.",
+          "type": "integer",
+          "default": 0,
+          "min": 0,
+          "max": 2147483647
+        }
+      ]
+    }
+  ],
+  "python": {
+    "version": "3.12",
+    "torch": "host",
+    "lock": {
+      "win": "nodes/requirements-win.txt",
+      "linux": "nodes/requirements-linux.txt"
+    },
+    "entry": "nodes.main"
+  },
+  "gpu": {
+    "vramMinMb": 8192,
+    "cpuAllowed": false
+  },
+  "permissions": {},
+  "requires": {
+    "models": [
+      {
+        "source": "huggingface",
+        "repo": "wgsxm/PartCrafter",
+        "revision": "69a0ffc1dad5e48e7e5ed91c0609f2b1276eb31f",
+        "license": "MIT",
+        "files": [
+          {
+            "path": "model_index.json",
+            "bytes": 525,
+            "sha256": "c6956993e6a5fb84dfaac5e003d2fec9ad2565fa7a27a22910e9905ba2bad6f4"
+          },
+          {
+            "path": "feature_extractor_dinov2/preprocessor_config.json",
+            "bytes": 436,
+            "sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828"
+          },
+          {
+            "path": "image_encoder_dinov2/config.json",
+            "bytes": 1086,
+            "sha256": "25329e19f8c1dc678017cc5fb47428a25169e1d90238a3584cccc89fbabc8525"
+          },
+          {
+            "path": "image_encoder_dinov2/model.safetensors",
+            "bytes": 608785376,
+            "sha256": "aa0b83921a3339259fb1ef684ce63c9d09b5a45f9998e0789a0ad4cba318b07b"
+          },
+          {
+            "path": "scheduler/scheduler_config.json",
+            "bytes": 158,
+            "sha256": "83b4baea6a130db64b069df0e3e57417c2a1170a529c095d78f562ff89b31a7c"
+          },
+          {
+            "path": "transformer/config.json",
+            "bytes": 476,
+            "sha256": "0c65b565d90ddcdeaaaff594b5c4622ca5d0e387b1dc583a2112d40c2f6f77dc"
+          },
+          {
+            "path": "transformer/diffusion_pytorch_model.safetensors",
+            "bytes": 2879298752,
+            "sha256": "915aba1d29c626d960305a0d36a6edb7798288a19c6724388b005c2fa53bcbf8"
+          },
+          {
+            "path": "vae/config.json",
+            "bytes": 385,
+            "sha256": "c49fbf1e80542386d0bc14472061ee831c5edb558b973913a374325bbb9576dd"
+          },
+          {
+            "path": "vae/diffusion_pytorch_model.safetensors",
+            "bytes": 485361378,
+            "sha256": "b43b006e5692223877427cdb568c2c1477f52a2d226db4d5eb354b4886c167a4"
+          }
+        ]
+      },
+      {
+        "source": "url",
+        "url": "https://github.com/ZhengPeng7/BiRefNet/releases/download/v1/BiRefNet-general-bb_swin_v1_tiny-epoch_232.onnx",
+        "path": "birefnet/BiRefNet-general-bb_swin_v1_tiny-epoch_232.onnx",
+        "bytes": 224005088,
+        "sha256": "5600024376f572a557870a5eb0afb1e5961636bef4e1e22132025467d0f03333",
+        "license": "MIT",
+        "when": {
+          "node": "image-to-parts",
+          "setting": "background",
+          "values": [
+            "auto",
+            "birefnet"
+          ]
+        }
+      }
+    ]
+  },
+  "licenseNotice": {
+    "excludedRegions": [
+      "EU"
+    ],
+    "conditions": "트랜스포머 코드 일부가 Tencent HunyuanDiT 에서 왔고 그 부분은 Tencent Hunyuan Community License(2024-05-14판)를 따른다. EU 에서는 쓸 수 없다. 다시 나눠 줄 때는 약관 사본과 Notice 문구를 함께 준다(이 플러그인은 그 파일 머리와 NOTICE 에 담았다). 약관의 사용 제한(Acceptable Use Policy)을 지키고 받는 사람에게도 알린다. 그 판 공개일에 월 이용자가 1억 명을 넘던 회사는 Tencent 의 허락을 따로 받아야 한다. PartCrafter 모델 가중치는 MIT.",
+    "url": "https://github.com/Tencent/HunyuanDiT/blob/main/LICENSE.txt"
+  }
+}

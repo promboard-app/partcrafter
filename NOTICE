@@ -1,0 +1,21 @@
+promboard.partcrafter
+Copyright 2026 PromBoard
+
+The plugin's own code (nodes/main.py, nodes/cutout.py) is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+nodes/partcrafter contains the inference code (src/models without briarmbg.py, src/pipelines, src/schedulers,
+src/utils/inference_utils.py) from wgsxm/PartCrafter (https://github.com/wgsxm/PartCrafter,
+commit 3d773bf02fad51c7ab31a5615573fec93b287b30), Copyright (c) 2025 Yuchen Lin, MIT License
+(nodes/partcrafter/LICENSE). Changes made by PromBoard: the package is renamed from src to partcrafter; added
+empty __init__.py files; models/autoencoders/autoencoder_kl_triposg.py imports torch_cluster only inside
+_sample_features (encoding, not used for inference); utils/inference_utils.py imports names from typing instead
+of the training-only src.utils.typing_utils.
+
+nodes/partcrafter/models/transformers/partcrafter_transformer.py is based on Tencent HunyuanDiT and portions of it
+are subject to the Tencent Hunyuan Community License Agreement, including its Acceptable Use Policy (full text in
+the header of that file). That agreement does not apply in the European Union and is limited to its Territory.
+Tencent Hunyuan is licensed under the Tencent Hunyuan Community License Agreement, Copyright © 2024 Tencent.
+All Rights Reserved. The trademark rights of "Tencent Hunyuan" are owned by Tencent or its affiliate.
+
+Model weights are not included. The plugin downloads wgsxm/PartCrafter (MIT License) from Hugging Face and the
+BiRefNet ONNX model (ZhengPeng7/BiRefNet GitHub release v1, MIT License) at prepare time.
