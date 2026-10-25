@@ -2,6 +2,10 @@
 
 PromBoard 커뮤니티 플러그인입니다. 캔버스에 **PartCrafter 이미지 → 부품별 3D** 노드 하나를 더합니다. 물체 사진 한 장을 넣으면 부품(다리 · 몸통 · 손잡이 등)이 따로 나뉜 3D 메시를 GLB 하나로 만듭니다. 부품마다 색과 이름(part_00 …)이 달라 3D 프로그램에서 따로 고르고 고칠 수 있습니다. [PartCrafter](https://github.com/wgsxm/PartCrafter)(NeurIPS 2025)를 씁니다.
 
+![물체 사진 → 배경 지우기(BiRefNet) → 부품별 생성 → 부품마다 메시 → 부품별 GLB](docs/pipeline.png)
+
+노드 안에서 일어나는 순서입니다(`docs/scripts/pipeline.py` 로 그림).
+
 > 미검증: 이 플러그인은 아직 끝까지 돌려 보지 못했습니다(앱에 '검증 안 됨'으로 보입니다). 결과 그림은 실제로 돌려 본 뒤 넣습니다.
 
 ## 노드
@@ -59,6 +63,10 @@ docs/scripts/                  README 그림 만드는 스크립트(GLB → thre
 ## English
 
 A PromBoard community plugin. It adds one **PartCrafter image → 3D parts** node: give it one photo of an object and it writes one GLB whose mesh is split into parts (legs, body, handle, ...). Each part has its own color and name (part_00 ...) so it can be selected and edited separately in 3D tools. It uses [PartCrafter](https://github.com/wgsxm/PartCrafter) (NeurIPS 2025).
+
+![Object photo → background removal (BiRefNet) → part generation → a mesh per part → GLB with one color per part](docs/pipeline.png)
+
+What happens inside the node, in order (drawn by `docs/scripts/pipeline.py`).
 
 > Not verified: this plugin has not been run end to end yet (the app shows it as unverified). Result images will be added after a real run.
 
